@@ -1,12 +1,12 @@
-from utils import validate_input
+from utils import validate_input, Indexer
 
 
 def run():
-    user_input = input("Please enter your number: ")
 
-    validate_input(user_input)
+    l = "2 10 020 03 3 60 4   ".split()
+    indexer = Indexer(l)
 
-    print("Valid")
+    indexer.calculate_nums(l, step=0, current_number="")
 
 
 if __name__ == "__main__":
