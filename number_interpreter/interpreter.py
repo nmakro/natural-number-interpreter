@@ -1,12 +1,14 @@
-from utils import validate_input, Indexer
+from analyzer import NumberAnalyzer
+from utils import get_user_input, validate_input
 
 
 def run():
 
-    l = "2 10 020 03 3 60 4   ".split()
-    indexer = Indexer(l)
+    user_in = get_user_input()
+    validate_input(user_in)
 
-    indexer.calculate_nums(l, step=0, current_number="")
+    analyzer = NumberAnalyzer(user_in.split())
+    analyzer.calculate_nums(analyzer.num_list, step=0, current_number="")
 
 
 if __name__ == "__main__":
