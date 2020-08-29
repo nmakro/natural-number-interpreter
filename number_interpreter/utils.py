@@ -73,8 +73,20 @@ def zero_trailing(num: str) -> bool:
     return False
 
 
+def starts_with_zero(num: str) -> bool:
+    if num[0] == "0":
+        return True
+    return False
+
+
 def is_larger_by_factor_ten(num1: str, num2: str) -> bool:
-    return len(num1) - len(num2) > 0
+    if starts_with_zero(num2):
+        return False
+    elif starts_with_zero(num1):
+        condition = is_larger_by_factor_ten(num1[1:], num2)
+        return condition
+    else:
+        return len(num1) - len(num2) > 0
 
 
 def validate_input(user_input):
@@ -121,7 +133,6 @@ class Indexer:
 
     def calculate_nums(self, num_list, step=0, current_number=""):
         step += 1
-        ambiguities_remaining = 0
         for index, num in enumerate(num_list):
             if current_number:
                 previous = current_number + "".join(num_list[:index]) + num
@@ -130,7 +141,6 @@ class Indexer:
             if self.has_ambiguity(num, index=step+index):
                 if not self.num_ambiguity_indexed(num):
                     self.ambiguities_dict[num] = self.calculate_ambiguities(num)
-                    ambiguities_remaining += len(self.ambiguities_dict[num])
                 self.calculate_nums(num_list[index + 1:], step=step+index, current_number=previous)
                 try:
                     for i, amb in enumerate(self.ambiguities_dict[num]):
@@ -139,7 +149,6 @@ class Indexer:
                         else:
                             previous = "".join(self.num_list[:index+step-1]) + str(amb)
                         self.calculate_nums(num_list[index + 1:], step=step + index, current_number=previous)
-                        ambiguities_remaining -= 1
                         if i == len(self.ambiguities_dict[num]) - 1:
                             return
                 except KeyError:
