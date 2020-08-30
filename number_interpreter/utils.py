@@ -1,12 +1,16 @@
 import sys
 
-
 class Error(Exception):
     def __init__(self, *args):
         if args:
             self.error_msg = args[0]
         else:
             self.error_msg = None
+
+
+class RetryNeeded(Error):
+    def __init__(self):
+        super().__init__(self)
 
 
 class BadInputType(Error):
@@ -19,6 +23,17 @@ class BadInputFormat(Error):
 
 class NotGreekNumber(Error):
     pass
+
+
+def utils_decorator(func):
+    def inner_function(*args):
+        try:
+            func(*args)
+        except Error as e:
+            sys.stdout.write(f"{e.error_msg}\n")
+            raise RetryNeeded
+
+    return inner_function
 
 
 def get_user_input():
@@ -53,7 +68,7 @@ def is_greek_number(user_input: str) -> bool:
     return user_input.startswith(tuple(numb_prefix_map[input_size]))
 
 
-def print_valid_number(num: str) -> str:
+def print_is_valid_number(num: str) -> str:
     if is_greek_number(num):
         return "VALID"
     return "INVALID"
@@ -81,6 +96,7 @@ def is_larger_by_factor_ten(num1: str, num2: str) -> bool:
         return len(num1) - len(num2) > 0
 
 
+@utils_decorator
 def validate_input(user_input: str):
     if not is_only_numbers(user_input):
         raise BadInputType("Input must be only integers that can be separated with spaces.")

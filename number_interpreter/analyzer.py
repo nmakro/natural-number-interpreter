@@ -1,8 +1,8 @@
 import sys
-from utils import is_larger_by_factor_ten, print_valid_number
+from number_interpreter.utils import is_larger_by_factor_ten, print_is_valid_number
 
 
-class NumberAnalyzer:
+class NumberInterpreter:
     def __init__(self, num_list: list):
         self.num_list = num_list
         self.ambiguities_dict = {}
@@ -11,6 +11,7 @@ class NumberAnalyzer:
     def calculate_ambiguities(self, num: str):
         """"
         A heuristic method that calculates all possible ambiguities for greek numbers.
+        Ambiguities start for two and three digits numbers above 12.
         """
         ambiguities = []
         if len(num) == 2:
@@ -49,6 +50,10 @@ class NumberAnalyzer:
         :return:
         """
         step += 1
+        if not num_list:
+            self.interpretations_count += 1
+            sys.stdout.write(f"Interpretation {self.interpretations_count}: {current_number} [phone number: {print_is_valid_number(current_number)}]\n")
+            return
         for index, num in enumerate(num_list):
             if current_number:
                 previous = current_number + "".join(num_list[:index]) + num
@@ -64,16 +69,17 @@ class NumberAnalyzer:
                             previous = current_number + "".join(num_list[:index]) + str(amb)
                         else:
                             previous = "".join(self.num_list[:index + step - 1]) + str(amb)
-                        self.calculate_nums(num_list[index + 1:], step=step + index, current_number=previous)
+                        remaining_numbers = num_list[index + 1:]
+                        self.calculate_nums(remaining_numbers, step=step + index, current_number=previous)
                         if i == len(self.ambiguities_dict[num]) - 1:
                             return
                 except KeyError:
                     pass
             if index == len(num_list) - 1:
                 self.interpretations_count += 1
-                sys.stdout.write(f"Interpretation {self.interpretations_count}: {previous} [phone number: {print_valid_number(previous)}]\n")
+                sys.stdout.write(f"Interpretation {self.interpretations_count}: {previous} [phone number: {print_is_valid_number(previous)}]\n")
 
-    def has_ambiguity(self, num: str, index):
+    def has_ambiguity(self, num: str, index) -> bool:
         """
         Find if current number is ambiguous and if there is an ambiguity with the number following.
         Such example is .. 20 3.. or .. 200 3 .. A more complex ambiguity is this .. 020 3..
