@@ -4,7 +4,7 @@ RUN mkdir /home/nnp
 
 WORKDIR /home/nnp
 
-RUN mkdir /home/app/dist
+RUN mkdir /home/nnp/dist
 
 COPY . .
 
